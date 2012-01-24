@@ -27,6 +27,22 @@ module NbTags
     s
   end
 
+  tag "nb:if_next_page" do |tag|
+    tag.expand unless next_page(tag) == false
+  end
+
+  tag "nb:unless_next_page" do |tag|
+    tag.expand if next_page(tag) == false
+  end
+
+  tag "nb:if_prev_page" do |tag|
+    tag.expand unless prev_page(tag) == false
+  end
+
+  tag "nb:unless_prev_page" do |tag|
+    tag.expand if prev_page(tag) == false
+  end
+
   tag "nb:next_page" do |tag|
     next_page(tag)
   end
@@ -74,6 +90,14 @@ module NbTags
     doc.search("img").each { |img| images << img.attributes['src']}
     tag.locals.image_urls = images
     tag.expand
+  end
+
+  tag "nb:images:if_image" do |tag|
+    tag.expand if tag.locals.images_urls && tag.locals.images_urls.length > 0
+  end
+
+  tag "nb:images:unless_image" do |tag|
+    tag.expand unless tag.locals.images_urls && tag.locals.images_urls.length > 0
   end
 
   tag "nb:images:first" do |tag|
