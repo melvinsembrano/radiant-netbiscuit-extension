@@ -7,6 +7,12 @@ module NbTags
     tag.expand
   end
 
+  tag "nb:page" do |tag|
+    p = tag.globals.page.request.parameters
+    tag.locals.page = Page.find_by_slug(p["slug"])
+    tag.expand if tag.locals.page
+  end
+
   tag "nb:pages" do |tag|
     s = %{
       <container class="article-navigation indent">
@@ -41,6 +47,10 @@ module NbTags
 
   tag "nb:unless_prev_page" do |tag|
     tag.expand if prev_page(tag) == false
+  end
+
+  tag "nb:current_page" do |tag|
+    current_page(tag)
   end
 
   tag "nb:next_page" do |tag|
@@ -93,11 +103,11 @@ module NbTags
   end
 
   tag "nb:images:if_image" do |tag|
-    tag.expand if tag.locals.images_urls && tag.locals.images_urls.length > 0
+    tag.expand if tag.locals.image_urls && tag.locals.image_urls.length > 0
   end
 
   tag "nb:images:unless_image" do |tag|
-    tag.expand unless tag.locals.images_urls && tag.locals.images_urls.length > 0
+    tag.expand unless tag.locals.image_urls && tag.locals.image_urls.length > 0
   end
 
   tag "nb:images:first" do |tag|
@@ -109,6 +119,12 @@ module NbTags
   def page_link(page, text, attributes = {})
     %{<a href="?page=#{page}">#{text}</a>}
   end
+
+  def current_index(tag)
+    collection = tag.locals.paginated_list
+    index = collection.current_page
+  end
+
 
   def next_page(tag)
     collection = tag.locals.paginated_list
