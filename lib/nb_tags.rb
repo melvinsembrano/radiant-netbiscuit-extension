@@ -42,12 +42,28 @@ module NbTags
     doc.to_s
   end
 
+  tag "nb:image" do |tag|
+    tag.locals.image_url
+  end
+
   tag "nb:images" do |tag|
     doc = Hpricot(tag.locals.page.part("body").content)
     images = []
     doc.search("img").each { |img| images << img.attributes['src']}
     tag.locals.image_urls = images
+    tag.locals.image_url = images.first
     tag.expand
+  end
+
+  tag "nb:images:each" do |tag|
+    result = []
+    if tag.locals.image_urls
+      tag.locals.image_urls.each do |u|
+        tag.locals.image_url = u
+        result << tag.expand
+      end
+    end
+    result
   end
 
   tag "nb:images:if_image" do |tag|
