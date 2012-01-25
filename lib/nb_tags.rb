@@ -42,6 +42,45 @@ module NbTags
     doc.to_s
   end
 
+  tag "nb:videos" do |tag|
+    tag.locals.mobile_videos = tag.locals.page.videos
+    tag.expand
+  end
+
+  tag "nb:videos:first" do |tag|
+    if tag.locals.mobile_videos && tag.locals.mobile_videos.count > 0
+      tag.locals.mobile_video = tag.locals.mobile_videos.first
+      tag.expand
+    end
+  end
+
+  tag "nb:videos:if_video" do |tag|
+    tag.expand  if tag.locals.mobile_videos && tag.locals.mobile_videos.count > 0
+  end
+
+  tag "nb:videos:unless_video" do |tag|
+    tag.expand unless tag.locals.mobile_videos && tag.locals.mobile_videos.count > 0
+  end
+
+  tag "nb:video" do |tag|
+    if tag.locals.mobile_video
+      width = tag.attr["width"] || "200"
+      height = tag.attr["height"] || "112"
+      autoplay = tag.attr["autoplay"] || "1"
+      code = tag.locals.mobile_video.embed_code
+      return %{
+        <preserve>
+        <script src="http://player.ooyala.com/player.js?
+        width=#{width}
+        &height=#{height}
+        &embedCode=#{code}
+        &autoplay=#{autoplay}">
+        </script>
+        </preserve>
+      }
+    end
+  end
+
   tag "nb:image" do |tag|
     tag.locals.image_url
   end
